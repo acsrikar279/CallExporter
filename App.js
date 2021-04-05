@@ -9,6 +9,7 @@ import {
   View,
   PermissionsAndroid,
   FlatList,
+  Dimensions,
   ToastAndroid
 } from 'react-native';
 //Import all the basic component from React Native Library
@@ -76,10 +77,19 @@ export default class App extends Component {
     );
   };
 
-  shareSingleImage = async () => {
+  shareSingleFile = async () => {
+    let currrentDate = new Date();
+    var date = currrentDate.getDate() ;
+    var month = currrentDate.getMonth() + 1;
+    var year = currrentDate.getFullYear();
+
+    date = (date<10)?'0' + date : date;
+    month = (month < 10) ? '0' + month : month;
+    let fileName = 'export_' + year + month + date + '.csv';
+    let filePath = 'file:///storage/emulated/0/Download/' + fileName;
     const shareOptions = {
       title: 'Share file',
-      url: 'file:///storage/emulated/0/Download/export.csv',
+      url: filePath,
       failOnCancel: false,
     };
 
@@ -90,7 +100,7 @@ export default class App extends Component {
           const parser = new Parser(opts);
           const csv = parser.parse(data);
           console.log(csv);
-          var path = '/storage/emulated/0/Download/export.csv';
+          var path = filePath;
           console.log(path);
           RNFS.writeFile(path, csv, 'utf8').then((success) => {console.log('FILE WRITTEN!');}).catch((err) => {console.log(err.message);});
           ToastAndroid.showWithGravity(
@@ -109,10 +119,16 @@ export default class App extends Component {
     }
   };
 
+  uploadAndFetchResult = async() =>{
+    ToastAndroid.showWithGravity('Method under construction.', ToastAndroid.SHORT, ToastAndroid.CENTER);
+  };
+
   render() {
     return (
       <View style={styles.MainContainer}>
-        <Button onPress={this.shareSingleImage} title="Share CSV" />
+        <Button onPress={this.shareSingleFile} title="Share CSV" />
+        <View style={styles.emptySpace}></View>
+        <Button onPress={this.uploadAndFetchResult} title="Upload and Get Result" />
         <FlatList
           data={this.state.FlatListItems}
           ItemSeparatorComponent={this.FlatListItemSeparator}
@@ -156,4 +172,9 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 18,
   },
+
+  emptySpace: {
+    height: 10,
+    width: 20
+  }
 });
